@@ -1,0 +1,52 @@
+{
+  "name": "node-micro",
+  "version": "1.0.0",
+  "description": "Node MicroService Framework",
+  "main": "./lib/index.js",
+  "scripts": {
+    "clean": "rm -rf lib && mkdir lib",
+    "build": "npm run clean && npm run lint && babel src -d ./lib --ignore=*-test.js -q",
+    "lint": "eslint -c .eslintrc src",
+    "test": "mocha --compilers js:babel-core/register $(find src -name '*.test.*.js') --timeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plimble/node-micro.git"
+  },
+  "dependencies": {
+    "bluebird": "^3.1.1",
+    "lodash": "^4.6.1",
+    "multitransport-jsonrpc": "^0.9.3"
+  },
+  "devDependencies": {
+    "babel": "^6.3.26",
+    "babel-cli": "^6.4.0",
+    "babel-core": "^6.4.0",
+    "babel-eslint": "^5.0.0-beta6",
+    "babel-plugin-module-alias": "^1.1.0",
+    "babel-plugin-syntax-async-functions": "^6.3.13",
+    "babel-plugin-transform-async-to-module-method": "^6.4.0",
+    "babel-preset-es2015-node4": "^2.0.2",
+    "babel-preset-stage-1": "^6.3.13",
+    "babel-preset-stage-2": "^6.3.13",
+    "chai": "^3.4.1",
+    "chai-as-promised": "^5.2.0",
+    "chai-string": "^1.1.6",
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^0.1.0",
+    "eslint-loader": "^1.2.0",
+    "eslint-plugin-babel": "^3.0.0",
+    "eslint-plugin-flow-vars": "^0.1.3",
+    "eslint-plugin-flowtype": "^1.0.0",
+    "eslint-plugin-import": "^0.12.1",
+    "eslint-plugin-react": "^3.15.0",
+    "mocha": "^2.3.4",
+    "sinon": "^1.17.2"
+  },
+  "author": "Witoo Harianto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/plimble/node-micro/issues"
+  },
+  "homepage": "https://github.com/plimble/node-micro#readme"
+}
