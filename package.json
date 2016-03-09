@@ -1,6 +1,6 @@
 {
   "name": "node-micro",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Node MicroService Framework",
   "main": "./lib/index.js",
   "scripts": {
@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "bluebird": "^3.1.1",
-    "lodash": "^4.6.1",
-    "multitransport-jsonrpc": "^0.9.3"
+    "jayson": "^2.0.0",
+    "tutum-clb": "^1.3.0"
   },
   "devDependencies": {
     "babel": "^6.3.26",

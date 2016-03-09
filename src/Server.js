@@ -1,65 +1,46 @@
-import _ from 'lodash';
-import jsonrpc, { server as RPCServer } from 'multitransport-jsonrpc';
-
-const ServerTCP = jsonrpc.transports.server.tcp;
-
-const defaultOptions = {
-  retries: null,
-  retry: null,
-  retryInterval: null,
-  logger: function() {},
-};
+import { Server as RPCServer } from 'jayson/promise';
+import events from 'events';
 
 export default class Server {
-  constructor(options = {}) {
-    this.options = _.extend({}, defaultOptions, options);
-    this.scopes = {};
-    this.events = {
-      connection: null,
-      message: null,
-      closedConnection: null,
-      listening: null,
-      retry: null,
-      error: null,
-      shutdown: null,
-    };
+  constructor(registry, options = {}) {
+    this.eventEmitter = new events.EventEmitter(this);
+    this.registry = registry;
+    this.options = options;
+    this.methods = {};
   }
 
-  registers(scopes) {
-    this.services = scopes;
+  registers(methods) {
+    this.methods = methods;
   }
 
-  register(methodName, scope) {
-    this.scopes[methodName] = scope;
+  register(methodName, method) {
+    this.methods[methodName] = method;
   }
 
   start(host = 'localhost', port = '3000') {
-    this.server = new RPCServer(new ServerTCP(port, {
-      ...this.options,
-    }), this.scopes);
+    this.server = new RPCServer(this.methods, this.options);
+    this.transport = this.server.http();
 
-    for (const eventName in this.events) {
-      if (this.events.hasOwnProperty(eventName)) {
-        if (this.events[eventName]) {
-          this.server.transport.on(eventName, this.events[eventName]);
-        }
-      }
-    }
+    this.transport.listen(port, host, (err)=>{
+      if (err) throw err;
+      this.registry.register(host, port);
+      this.eventEmitter.emit('start', err);
+    });
   }
 
   shutdown() {
-    if (!this.server) {
+    if (!this.transport) {
       return;
     }
 
-    this.server.shutdown(()=>{
-      process.exit();
+    this.transport.close((err)=>{
+      if (err) throw err;
+      this.registry.deregister();
+      this.eventEmitter.emit('stop');
     });
   }
 
   on(eventName, cb) {
-    if (this.events.hasOwnProperty(eventName)) {
-      this.events[eventName] = cb;
-    }
+    this.eventEmitter.on(eventName, cb);
   }
 }

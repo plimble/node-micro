@@ -1,16 +1,19 @@
 import { Server, Client } from '../../src';
+import Registry from '../../src/registry/url';
 
-function add(x, y, z, resp) {
-  resp(null, x + y + z);
+function add(args, resp) {
+  resp(null, args[0] + args[1] + args[2]);
 }
 
-const server = new Server();
+const registry = new Registry('http://localhost:3000');
 
-server.on('shutdown', ()=>{
+const server = new Server(registry);
+
+server.on('stop', ()=>{
   console.log('server shutdown');
 });
 
-server.on('connection', ()=>{
+server.on('start', ()=>{
   console.log('server connection');
 });
 
@@ -19,16 +22,11 @@ server.register('add', add);
 server.start('localhost', 3000);
 console.log('start server');
 
-const client = new Client('localhost', 3000);
-
-client.on('message', (err, msg)=>{
-  console.log('client message', err, msg);
-});
+const client = new Client(registry);
 
 console.log('call add');
-client.autoRegister().then(()=>{
-  return client.call('add', 1, 2, 3);
-}).then((val)=>{
+
+client.call('math', 'add', [1, 2, 3]).then((val)=>{
   console.log(val);
   server.shutdown();
 });
