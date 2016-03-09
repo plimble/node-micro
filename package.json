@@ -15,8 +15,10 @@
   },
   "dependencies": {
     "bluebird": "^3.1.1",
+    "commander": "^2.9.0",
     "jayson": "^2.0.0",
-    "tutum-clb": "^1.3.0"
+    "tutum-clb": "^1.3.0",
+    "vorpal": "^1.10.8"
   },
   "devDependencies": {
     "babel": "^6.3.26",

@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+var vorpal = require('vorpal')();
+var commander = require('commander');
+var Client = require('../lib').Client;
+var Registry = require('../lib/registry/url').default;
+
+commander
+  .option('-s, --server <hostname>', 'The hostname the server is located on. (Default: "localhost")', 'localhost')
+  .option('-p, --port <portnumber>', 'The port the server is bound to. (Default: 80)', 80)
+  .option('-t, --tcp', 'Connects to the server via TCP instead of HTTP (Default: false)', false)
+  .option('--path <path>', 'The path part of the URL, e.g. "/rpc" (Default: "/")', '/')
+  .parse(process.argv);
+
+var registry = new Registry('http://' + commander.server + ':' + commander.port);
+var client = new Client(registry);
+
+vorpal
+  .command('call <method> <params>', 'Call the service')
+  .action(function(args, callback) {
+    console.log('call', 'method', args.method, 'params', args.params);
+    client.call('service', args.method, JSON.parse(args.params)).then((resp)=>{
+      console.log(resp);
+      callback();
+    }).catch(function(err) {
+      console.log(err);
+      callback();
+    });
+  });
+
+vorpal
+  .delimiter('node-micro$')
+  .show();
